@@ -630,6 +630,15 @@ static int trace_dump_one(FAR FILE *out,
         break;
 #endif
 
+      case NOTE_MESSAGE:
+        {
+          FAR struct note_message_s *nms = (FAR struct note_message_s *)p;
+
+          trace_dump_header(out, note, ctx);
+          fprintf(out, "trace_message: %s\n", nms->nms_mesg);
+        }
+        break;
+
       default:
         break;
     }
