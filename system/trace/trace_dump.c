@@ -582,11 +582,25 @@ static int trace_dump_one(FAR FILE *out,
       case NOTE_IRQ_ENTER:
         {
           FAR struct note_irqhandler_s *nih;
+          uintptr_t handler;
 
           nih = (FAR struct note_irqhandler_s *)p;
           trace_dump_header(out, note, ctx);
-          fprintf(out, "irq_handler_entry: irq=%u\n",
-                  nih->nih_irq);
+
+          handler = (uintptr_t)nih->nih_handler[0];
+          handler |= (uintptr_t)nih->nih_handler[1] << 8;
+          handler |= (uintptr_t)nih->nih_handler[2] << 16;
+          handler |= (uintptr_t)nih->nih_handler[3] << 24;
+#if UINTPTR_MAX > UINT32_MAX
+          handler |= (uintptr_t)nih->nih_handler[4] << 32;
+          handler |= (uintptr_t)nih->nih_handler[5] << 40;
+          handler |= (uintptr_t)nih->nih_handler[6] << 48;
+          handler |= (uintptr_t)nih->nih_handler[7] << 56;
+#endif
+
+          fprintf(out, "irq_handler_entry: irq=%u addr=0x%x\n",
+                  nih->nih_irq,
+                  handler);
           cctx->intr_nest++;
         }
         break;
